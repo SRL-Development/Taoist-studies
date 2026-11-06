@@ -1,0 +1,14 @@
+{
+  "name": "xuandao-yishu",
+  "private": true,
+  "version": "0.6.0",
+  "scripts": {
+    "build": "esbuild src/tools-pro.js --bundle --minify --format=iife --outfile=dist/tools-pro.js"
+  },
+  "dependencies": {
+    "iztro": "2.6.4"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
