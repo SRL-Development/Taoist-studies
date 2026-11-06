@@ -1,0 +1,21 @@
+(() => {
+ const dialog=document.getElementById('reader-dialog'),body=dialog.querySelector('.reader-content'),note=document.getElementById('progress-note');
+ const css=document.createElement('link');css.rel='stylesheet';css.href='./classic-reader.css';document.head.append(css);
+ dialog.querySelector('.eyebrow').lastChild.textContent=' 本地古籍阅读';
+ let state=null,token=0;const cache=new Map();
+ const el=(tag,text)=>{const e=document.createElement(tag);if(text!=null)e.textContent=text;return e;};
+ function saved(name){try{return JSON.parse(localStorage.getItem('classic-position:'+name)||'null');}catch{return null;}}
+ async function json(url){if(!cache.has(url))cache.set(url,fetch(url).then(r=>{if(!r.ok)throw Error('资料加载失败 '+r.status);return r.json();}).catch(e=>{cache.delete(url);throw e;}));return cache.get(url);}
+ function show(){if(!state)return;body.replaceChildren();const controls=el('div');controls.className='classic-controls';const back=el('button','上一页 / 章'),next=el('button','下一页 / 章');back.type=next.type='button';back.disabled=state.index===0;const count=state.scan?408:state.data.chapters.length;next.disabled=state.index>=count-1;back.onclick=()=>{state.index--;show();};next.onclick=()=>{state.index++;show();};const select=el('select');select.setAttribute('aria-label','选择页码或章节');for(let i=0;i<count;i++){const option=el('option',state.scan?'影印第 '+(i+1)+' 页':state.data.chapters[i].title);option.value=i;select.append(option);}select.value=state.index;select.onchange=()=>{state.index=Number(select.value);show();};controls.append(back,select,next);body.append(controls);
+ if(state.scan){const help=el('p','1925年文明书局版 · 4册十二卷 · 全408页。页码为扫描文件页码。');help.className='classic-meta';body.append(help);const img=el('img');img.className='classic-scan';img.src='./assets/qimen/page-'+String(state.index+1).padStart(3,'0')+'.jpg';img.alt='奇门遁甲统宗原书扫描第'+(state.index+1)+'页';body.append(img);const a=el('a','下载整本原版 PDF（8.4 MB）');a.href='./books/qimen-tongzong-1925.pdf';a.download='奇门遁甲统宗-1925.pdf';body.append(a);}
+ else{const chapter=state.data.chapters[state.index];const meta=el('p',state.data.scope+'；'+state.data.license);meta.className='classic-meta';body.append(meta,el('h3',chapter.title));const pre=el('div',chapter.text);pre.className='classic-text';body.append(pre);const a=el('a','来源与修订记录');a.href=chapter.source+(chapter.revision?'?oldid='+chapter.revision:'');a.target='_blank';a.rel='noopener';body.append(a);}
+ note.textContent=(state.index+1)+' / '+count;dialog.scrollTop=0;
+ }
+ window.openClassic=async(name,page)=>{const request=++token;state=null;document.getElementById('reader-title').textContent=name;body.replaceChildren(el('p','正在载入本地古籍…'));note.textContent='';if(!dialog.open)dialog.showModal();try{const pos=saved(name);if(name==='奇门遁甲统宗'){state={name,scan:true,index:Math.max(0,Math.min(407,(page??pos?.index??1)-1))};}else{const list=await json('./books/text-manifest.json');const entry=list.find(b=>b.name===name);if(!entry?.file)throw Error('此书尚无核验后的本地正文，暂不提供试读占位内容。');const data=await json('./books/'+entry.file);if(request!==token)return;state={name,scan:false,data,index:Math.max(0,Math.min(data.chapters.length-1,(pos?.index||1)-1))};}show();}catch(e){if(request===token)body.replaceChildren(el('p',e.message));}};
+ window.saveClassicPosition=()=>{if(!state)return;try{localStorage.setItem('classic-position:'+state.name,JSON.stringify({index:state.index+1,at:new Date().toISOString()}));note.textContent='已保存：第 '+(state.index+1)+' 页 / 章';}catch{note.textContent='无法保存，请记下当前页码。';}};
+ const list=document.querySelector('.book-list');
+ for(const [name,title] of [['卜筮正宗','卜筮正宗'],['渊海子平','渊海子平'],['紫微斗数全书','紫微斗数 · 道藏本']]){
+  const article=el('article'),cover=el('div',title.slice(0,4));cover.className='book-cover green';const copy=el('div');copy.append(el('em','本地电子录入本'),el('h3',title));const button=el('button','阅');button.className='mini';button.type='button';button.setAttribute('aria-label','阅读'+title);button.onclick=()=>window.openClassic(name);copy.append(button);article.append(cover,copy);list.append(article);
+ }
+ const libraryNote=el('p','收录11部古籍电子文本及《奇门遁甲统宗》1925年版全408页影印。电子本未逐字校勘，卷界与缺图以来源为准；紫微当前收《万历续道藏》本，并非《紫微斗数全书》。');libraryNote.className='classic-meta';document.getElementById('library').append(libraryNote);
+})();

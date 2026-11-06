@@ -9,6 +9,7 @@
     "iztro": "2.6.4"
   },
   "devDependencies": {
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "linkedom": "^0.18.15"
   }
 }

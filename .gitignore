@@ -7,3 +7,4 @@ release/
 *.zip
 *.tar
 npm-debug.log*
+tmp/
