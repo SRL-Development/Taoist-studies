@@ -79,7 +79,7 @@ amd64 与 arm64 不能直接混用；跨平台构建需使用 Docker buildx 指�
 
 ## 验收
 
-作者环境没有 Docker 命令，未完成镜像构建、nginx -t 和容器健康实测。请在有 Docker 的机器执行以上验收。
+2026-11-06 已通过 [GitHub Actions 容器验收](https://github.com/SRL-Development/Taoist-studies/actions/runs/42140474059)：默认镜像构建、Compose 启动、nginx -t、健康端点、静态资源检查与 Dockerfile.build 源码构建。目标服务器仍需按上文核对端口、域名与网络。
 另提供 Node.js 18+ 可运行的响应检查脚本：
 
 ```sh

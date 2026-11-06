@@ -18,7 +18,7 @@ docker compose up -d --build
 不需要 ChatGPT 登录或 API Key。默认使用已构建的 dist 文件，无需服务器安装 Node。
 
 详见 [Docker 发布说明](docs/DOCKER.md) 与 [微信小程序适配计划](docs/MINIPROGRAM.md)。
-当前作者环境没有 Docker，容器构建和健康检查仍需在部署机器验证。
+Docker 镜像构建、Compose 启动、Nginx 配置、健康检查、静态资源与源码构建已通过 [GitHub Actions 验证](https://github.com/SRL-Development/Taoist-studies/actions/runs/42140474059)。目标服务器的网络、域名和端口仍需部署时确认。
 
 周易、六爻、梅花易数、四柱八字、三式与堪舆等传统术数的一站式学习与工具平台原型。
 
